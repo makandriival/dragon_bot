@@ -6,8 +6,8 @@ class Contacts:
     # and will get arguments like command string words
     # and will call the private methods
     # method print message for user to console
-    # method raise extensions 
-    # if arguments don't match the expected format    
+    # method raise exceptions 
+    # if arguments don't match the expected format
     def remove_contact(self, *args):
         pass
 
