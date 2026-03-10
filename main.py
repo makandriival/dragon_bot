@@ -1,6 +1,6 @@
-from notes import Notes
-from interface import Interface
-from contacts import Contacts 
+from lib.notes import Notes
+from lib.interface import Interface
+from lib.contacts import Contacts 
 
 
 def main():

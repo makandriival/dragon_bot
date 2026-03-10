@@ -1,8 +1,28 @@
+import pickle
+
 class Notes:
     """Class for managing notes."""
 
     def __init__(self):
         self.notes = []
+
+    # example of public methods that will be called by the interface
+    # public methods will be nothing returning
+    # and will get arguments like command string words
+    def add_note(self, *args):
+        if len(args) != 1:
+            # method raise exceptions 
+            # if arguments don't match the expected format
+            raise ValueError("add_note command requires exactly one argument.")
+        note = args[0]
+        # and will call the private methods
+        # method print message for user to console
+        print(self.__add_note(note))
+        with open("notes.pkl", "wb") as f:
+            pickle.dump(self.notes, f)
+
+    def get_notes(self, *args):
+        pass
 
     # will make all the methods private
     def __add_note(self, note: str):
@@ -26,12 +46,3 @@ class Notes:
 
     def __search_notes(self, keyword: str) -> list[str]:
         return [note for note in self.notes if keyword.lower() in note.lower()]
-    
-    # public methods will be nothing returning
-    # and will get arguments like command string words
-    # and will call the private methods
-    # method print message for user to console
-    # method raise extensions 
-    # if arguments don't match the expected format
-    def add_note(self, *args):
-        pass
