@@ -1,0 +1,5 @@
+# Ignore the pull requests list file
+pullrequests-list.txt
+
+# Ignore the virtual environment directory
+.venv/
