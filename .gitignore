@@ -3,3 +3,6 @@ pullrequests-list.txt
 
 # Ignore the virtual environment directory
 .venv/
+
+# Ignore the __pycache__ directory where Python stores compiled bytecode
+__pycache__/
