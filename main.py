@@ -1,7 +1,6 @@
-from notes import Notes
-from interface import Interface
-from contacts import Contacts 
-
+from lib.contacts.contacts import Contacts
+from lib.notes.notes import Notes
+from lib.interface.interface import Interface
 
 def main():
     # Create an instance of the Notes class
