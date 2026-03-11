@@ -1,3 +1,6 @@
+from ..writer import write_message
+
+
 class Interface:
     def __init__(self, commands: dict[str, callable]):
         self.__commands = commands
@@ -6,7 +9,7 @@ class Interface:
         while True:
             user_input = input("Enter command: ")
             if user_input.lower() in ["exit", "quit"]:
-                print("Exiting...")
+                write_message("Exiting...", "info")
                 break
 
             command_parts = user_input.split()
@@ -20,6 +23,6 @@ class Interface:
                 try:
                     self.__commands[command_name](*args)
                 except Exception as e:
-                    print(f"Error executing command '{command_name}': {e}")
+                    write_message(e, "error")
             else:
-                print(f"Unknown command: {command_name}")
+                write_message(f"Unknown command: {command_name}", "error")

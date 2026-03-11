@@ -6,10 +6,10 @@ from colorama import Fore
 # (info, warning, error).
 def write_message(message: str, type: str = "info"):
     if type == "info":
-        print(Fore.GREEN + message + Fore.RESET)
+        print(Fore.GREEN + str(message) + Fore.RESET)
     elif type == "warning":
-        print(Fore.YELLOW + message + Fore.RESET)
+        print(Fore.YELLOW + str(message) + Fore.RESET)
     elif type == "error":
-        print(Fore.RED + message + Fore.RESET)
+        print(Fore.RED + str(message) + Fore.RESET)
     else:
-        print(message)
+        print(str(message))

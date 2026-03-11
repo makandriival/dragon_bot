@@ -1,5 +1,6 @@
 import pickle
 from ..writer import write_message
+from ..bot_exceptions import NotEnoughArgumentsError
 
 
 class Notes:
@@ -12,10 +13,14 @@ class Notes:
     # public methods will be nothing returning
     # and will get arguments like command string words
     def add_note(self, *args):
-        if len(args) != 1:
-            # method raise exceptions 
-            # if arguments don't match the expected format
-            raise ValueError("add_note command requires exactly one argument.")
+        if len(args) < 1:
+            # method raise not enough arguments exception if the number
+            # of arguments is less than the expected number
+            raise NotEnoughArgumentsError
+        elif len(args) > 1:
+            # method print message for user to console if the number of 
+            # arguments is more than the expected number
+            write_message("Too many arguments provided. Some arguments were not used", "warning")
         note = args[0]
         # and will call the private methods
         # method print message for user to console
