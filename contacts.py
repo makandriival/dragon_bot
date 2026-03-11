@@ -6,9 +6,12 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-
-class ContactValidationError(ValueError):
-    pass
+from lib.bot_exceptions import (
+    DuplicateContactError,
+    InvalidDateError,
+    InvalidEmailError,
+    InvalidPhoneNumberError,
+)
 
 
 class Contacts:
@@ -29,23 +32,26 @@ class Contacts:
     def _validate_email(email: str) -> None:
         # Simple email validation; not RFC perfect but good enough for basic use.
         if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
-            raise ContactValidationError(f"Invalid email: {email}")
+            raise InvalidEmailError(f"Invalid email: {email}")
 
     @staticmethod
     def _validate_phone(phone: str) -> None:
         # Accept digits, spaces, dashes, parentheses, plus sign.
         cleaned = re.sub(r"[^0-9]", "", phone)
         if len(cleaned) < 7 or len(cleaned) > 15:
-            raise ContactValidationError(f"Invalid phone number: {phone}")
+            raise InvalidPhoneNumberError(f"Invalid phone number: {phone}")
 
     @staticmethod
     def _validate_birthday(birthday: str) -> date:
-        try:
-            return datetime.strptime(birthday, "%Y-%m-%d").date()
-        except ValueError as e:
-            raise ContactValidationError(
-                "Birthday must be in ISO format YYYY-MM-DD (e.g. 1990-12-31)."
-            ) from e
+        # Accept either ISO (YYYY-MM-DD) or common local format (DD.MM.YYYY).
+        for fmt in ("%Y-%m-%d", "%d.%m.%Y"):
+            try:
+                return datetime.strptime(birthday, fmt).date()
+            except ValueError:
+                continue
+        raise InvalidDateError(
+            "Birthday must be in format YYYY-MM-DD or DD.MM.YYYY (e.g. 1990-12-31)."
+        )
 
     # --- Internal helpers ---
     def _find_by_id(self, contact_id: int) -> Optional[Dict[str, Any]]:
@@ -134,6 +140,10 @@ class Contacts:
         self._validate_email(email)
         birthday_date = self._validate_birthday(birthday)
 
+        # Prevent duplicate contacts by name (case-insensitive).
+        if any(c["name"].lower() == name.lower() for c in self._contacts):
+            raise DuplicateContactError(f"Contact already exists: {name}")
+
         contact = {
             "id": self._next_id,
             "name": name,
@@ -212,6 +222,15 @@ class Contacts:
         elif field == "birthday":
             birthday_date = self._validate_birthday(new_value)
             new_value = birthday_date.isoformat()
+        elif field == "name":
+            # Prevent changing name to an existing contact's name.
+            if any(
+                c["id"] != contact_id_int and c["name"].lower() == new_value.lower()
+                for c in self._contacts
+            ):
+                raise DuplicateContactError(
+                    f"Contact already exists with name: {new_value}"
+                )
 
         contact[field] = new_value
         self._save()
