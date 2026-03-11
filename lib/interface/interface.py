@@ -1,15 +1,25 @@
 class Interface:
-    # commands is a dictionary where the key is the command string
-    # and the value is a callable (function) that executes the command
     def __init__(self, commands: dict[str, callable]):
-        self.commands = commands
+        self.__commands = commands
 
-    # This method will continuously read user input and execute 
-    # the corresponding command
     def command_loop(self):
         while True:
-            user_input = input("Enter a command: ")
-            if user_input in self.commands:
-                self.commands[user_input]()
+            user_input = input("Enter command: ")
+            if user_input.lower() in ["exit", "quit"]:
+                print("Exiting...")
+                break
+
+            command_parts = user_input.split()
+            if not command_parts:
+                continue
+
+            command_name = command_parts[0]
+            args = command_parts[1:]
+
+            if command_name in self.__commands:
+                try:
+                    self.__commands[command_name](*args)
+                except Exception as e:
+                    print(f"Error executing command '{command_name}': {e}")
             else:
-                print("Unknown command")
+                print(f"Unknown command: {command_name}")
