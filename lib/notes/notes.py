@@ -1,4 +1,6 @@
 import pickle
+from ..writer import write_message
+
 
 class Notes:
     """Class for managing notes."""
@@ -17,7 +19,7 @@ class Notes:
         note = args[0]
         # and will call the private methods
         # method print message for user to console
-        print(self.__add_note(note))
+        write_message(self.__add_note(note), "info")
         with open("notes.pkl", "wb") as f:
             pickle.dump(self.notes, f)
 

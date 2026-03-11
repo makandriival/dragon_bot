@@ -1,4 +1,4 @@
-from lib.contacts.contacts import Contacts
+from .contacts import Contacts
 
 
 __all__ = ["Contacts"]
