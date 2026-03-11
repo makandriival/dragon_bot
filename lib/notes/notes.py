@@ -18,9 +18,11 @@ class Notes:
             # of arguments is less than the expected number
             raise NotEnoughArgumentsError
         elif len(args) > 1:
-            # method print message for user to console if the number of 
+            # method print message for user to console if the number of
             # arguments is more than the expected number
-            write_message("Too many arguments provided. Some arguments were not used", "warning")
+            write_message(
+                "Too many arguments provided. Some arguments were not used",
+                "warning")
         note = args[0]
         # and will call the private methods
         # method print message for user to console

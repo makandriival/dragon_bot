@@ -1,8 +1,8 @@
 from colorama import Fore
 
 
-# This function is used to write messages to the console 
-# with different colors based on the type of message 
+# This function is used to write messages to the console
+# with different colors based on the type of message
 # (info, warning, error).
 def write_message(message: str, type: str = "info"):
     if type == "info":

@@ -4,7 +4,7 @@ from .bot_exceptions import NotEnoughArgumentsError, \
     InvalidDateError
 
 
-__all__ = ["NotEnoughArgumentsError", "InvalidCommandError", 
+__all__ = ["NotEnoughArgumentsError", "InvalidCommandError",
            "NoteNotFoundError", "ContactNotFoundError",
-           "InvalidEmailError", "DuplicateContactError", 
+           "InvalidEmailError", "DuplicateContactError",
            "InvalidPhoneNumberError", "InvalidDateError"]
