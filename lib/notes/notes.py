@@ -1,13 +1,13 @@
-import pickle
 from ..writer import write_message
 from ..bot_exceptions import NotEnoughArgumentsError
+from ..data_source.actions import write_to_file, read_from_file
 
 
 class Notes:
     """Class for managing notes."""
 
     def __init__(self):
-        self.notes = []
+        self.notes = read_from_file("notes")
 
     # example of public methods that will be called by the interface
     # public methods will be nothing returning
@@ -27,8 +27,8 @@ class Notes:
         # and will call the private methods
         # method print message for user to console
         write_message(self.__add_note(note), "info")
-        with open("notes.pkl", "wb") as f:
-            pickle.dump(self.notes, f)
+        # save changes to file after adding a note
+        write_to_file(self.notes, "notes")
 
     def get_notes(self, *args):
         pass
