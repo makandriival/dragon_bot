@@ -1,6 +1,6 @@
-from ..writer import write_message
-from ..bot_exceptions import NotEnoughArgumentsError
-from ..data_source.actions import write_to_file, read_from_file
+from writer import write_message
+from bot_exceptions import NotEnoughArgumentsError
+from data_source.actions import write_to_file, read_from_file
 
 
 class Notes:

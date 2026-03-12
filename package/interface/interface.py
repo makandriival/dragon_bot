@@ -1,4 +1,4 @@
-from ..writer import write_message
+from writer import write_message
 
 
 class Interface:
