@@ -1,6 +1,6 @@
-from ..writer import write_message
-from ..bot_exceptions import NotEnoughArgumentsError
-from ..data_source.actions import write_to_file, read_from_file
+from writer import write_message
+from bot_exceptions import NotEnoughArgumentsError
+from data_source.actions import write_to_file, read_from_file
 
 
 class Notes:
@@ -44,10 +44,12 @@ class Notes:
 
     def delete_note(self, *args):
         if len(args) != 1:
-            raise ValueError("delete_note command requires exactly one argument.")
+            raise ValueError("delete_note command requires exactly one"
+                             " argument.")
 
         if not args[0].isdigit():
-            raise ValueError("delete_note argument must be a note number.")
+            raise ValueError("delete_note argument must be a note"
+                             " number.")
 
         index = int(args[0]) - 1
         deleted = self.__delete_note(index)
@@ -60,7 +62,8 @@ class Notes:
 
     def edit_note(self, *args):
         if len(args) < 2:
-            raise ValueError("edit_note command requires note number and new text.")
+            raise ValueError("edit_note command requires note number"
+                             " and new text.")
 
         if not args[0].isdigit():
             raise ValueError("First argument must be a note number.")
@@ -78,7 +81,8 @@ class Notes:
 
     def search_notes(self, *args):
         if len(args) != 1:
-            raise ValueError("search_notes command requires exactly one argument.")
+            raise ValueError("search_notes command requires exactly one"
+                             " argument.")
 
         keyword = args[0]
 
@@ -116,17 +120,3 @@ class Notes:
 
     def __search_notes(self, keyword: str):
         return [note for note in self.notes if keyword.lower() in note.lower()]
-
-    def __save_notes(self):
-        with open(self.file_path, "wb") as f:
-            pickle.dump(self.notes, f)
-
-    def __load_notes(self):
-        if not self.file_path.exists():
-            return
-
-        try:
-            with open(self.file_path, "rb") as f:
-                self.notes = pickle.load(f)
-        except Exception:
-            self.notes = []

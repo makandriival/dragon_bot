@@ -1,7 +1,3 @@
-class Error(Exception):
-    pass
-
-
 class NotEnoughArgumentsError(Exception):
     def __init__(
             self,
