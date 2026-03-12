@@ -1,18 +1,13 @@
-import pickle
-from pathlib import Path
 from ..writer import write_message
 from ..bot_exceptions import NotEnoughArgumentsError
+from ..data_source.actions import write_to_file, read_from_file
 
 
 class Notes:
     """Class for managing notes."""
 
     def __init__(self):
-        self.notes = []
-        self.file_path = Path("notes.pkl")
-        self.__load_notes()
-
-    # public methods (called by interface)
+        self.notes = read_from_file("notes")
 
     def add_note(self, *args):
         if len(args) < 1:
@@ -28,7 +23,8 @@ class Notes:
         note = args[0]
 
         write_message(self.__add_note(note), "info")
-        self.__save_notes()
+        # save changes to file after adding a note
+        write_to_file(self.notes, "notes")
 
     def get_notes(self, *args):
         if len(args) != 0:
