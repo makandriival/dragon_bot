@@ -59,7 +59,7 @@ class Address(Field): pass
 class Record:
     def __init__(self, name):
         self.name = Name(name)
-        self.address = None  # Адреса йде одразу після імені
+        self.address = None
         self.phones = []
         self.email = None
         self.birthday = None
