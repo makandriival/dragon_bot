@@ -7,7 +7,7 @@ pip install dragonbot
 ```
 
 ## Description
-The Personal Assistent Bot can:
+The Personal Assistant Bot can:
 1. Save contacts with names, addresses, phone numbers, emails and birthdays to the contact book.
 2. Display a list of contacts whose birthday is a specified number of days from the current date.
 3. Check the correctness of the entered phone number and email when creating or editing an entry and notify the user in case of incorrect entry.
@@ -101,3 +101,4 @@ The following commands will be available to you:
 19. Exit from program
 
     ```exit```
+    ```quit```
