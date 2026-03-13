@@ -31,8 +31,7 @@ class Field:
         self._validate(value)
         self._value = value
 
-class Name(Field): 
-    pass
+class Name(Field): pass
 
 class Phone(Field):
     def _validate(self, value):
@@ -54,18 +53,16 @@ class Birthday(Field):
     def get_date(self):
         return datetime.strptime(self.value, DATE_FORMAT).date()
 
-class Address(Field): 
-    pass
+class Address(Field): pass
 
 # RECORD
 class Record:
     def __init__(self, name):
         self.name = Name(name)
-        self.address = None      
+        self.address = None  # Адреса йде одразу після імені
         self.phones = []
         self.email = None
         self.birthday = None
-
 
     def add_phone(self, phone):
         self.phones.append(Phone(phone))
@@ -124,7 +121,7 @@ class Record:
             record.set_birthday(data["birthday"])
         return record
 
-# CONTACTS 
+# CONTACTS
 class Contacts(UserDict):
     def __init__(self):
         super().__init__()
