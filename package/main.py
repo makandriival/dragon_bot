@@ -1,6 +1,6 @@
 from notes import Notes
 from interface import Interface
-from contacts import Contacts
+from contacts import *
 
 
 def main():
@@ -12,12 +12,18 @@ def main():
 
     # Create a dictionary of commands and their corresponding functions
     commands = {
-        "add_note": notes.add_note,
-        "get_notes": notes.get_notes,
-        "add_contact": contacts.add_contact,
-        "remove_contact": contacts.remove_contact,
-        "get_contact": contacts.get_contact,
-        # Add more commands as needed
+        "add-contact": add_contact,
+        "add-phone": add_phone,
+        "set-email": set_email,
+        "set-birthday": set_birthday,
+        "all-contacts": all_contacts,
+        "find-contact": find_contact,
+        "birthdays": birthdays,
+        "edit-name": edit_name,
+        "del-phone": del_phone,
+        "del-email": del_email,
+        "del-birthday": del_birthday,
+        "del-contact": del_contact,
     }
 
     # Create an instance of the Interface class with the commands

@@ -1,5 +1,31 @@
-from .contacts_cli import Contacts
-from .contacts_service import ContactsService
-from .contact_storage import ContactStorage
+from .contacts import (
+    Contacts,
+    add_contact,
+    add_phone,
+    set_email,
+    set_birthday,
+    all_contacts,
+    find_contact,
+    birthdays,
+    edit_name,
+    del_phone,
+    del_email,
+    del_birthday,
+    del_contact,
+)
 
-__all__ = ["Contacts", "ContactsService", "ContactStorage"]
+__all__ = [
+    "Contacts",
+    "add_contact",
+    "add_phone",
+    "set_email",
+    "set_birthday",
+    "all_contacts",
+    "find_contact",
+    "birthdays",
+    "edit_name",
+    "del_phone",
+    "del_email",
+    "del_birthday",
+    "del_contact",
+]
