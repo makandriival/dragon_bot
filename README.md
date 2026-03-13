@@ -58,10 +58,6 @@ The following commands will be available to you:
 
     ```birthdays <number_of_days>```
 
-8. Edit contact's name
-
-    ```edit-name <old_name> <new_name>```
-
 9. Delete contact's phone
 
     ```del-phone <name> <phone>```
@@ -88,7 +84,7 @@ The following commands will be available to you:
 
 15. Add another a tag to the note 
 
-    ```add-phone <note_id> <tag>```
+    ```add-tag <note_id> <tag>```
 
 16. Delete a note
 
