@@ -105,3 +105,4 @@ The following commands will be available to you:
 19. Exit from program
 
     ```exit```
+    ```quit```
