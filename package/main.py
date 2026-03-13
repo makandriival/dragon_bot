@@ -14,6 +14,7 @@ def main():
     commands = {
         "add-contact": add_contact,
         "add-phone": add_phone,
+        "set-address": set_address,
         "set-email": set_email,
         "set-birthday": set_birthday,
         "all-contacts": all_contacts,
@@ -24,6 +25,7 @@ def main():
         "del-email": del_email,
         "del-birthday": del_birthday,
         "del-contact": del_contact,
+        "del-address": del_address,
     }
 
     # Create an instance of the Interface class with the commands

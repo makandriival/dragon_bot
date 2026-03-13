@@ -4,6 +4,7 @@ from .contacts import (
     add_phone,
     set_email,
     set_birthday,
+    set_address,
     all_contacts,
     find_contact,
     birthdays,
@@ -11,6 +12,7 @@ from .contacts import (
     del_phone,
     del_email,
     del_birthday,
+    del_address,
     del_contact,
 )
 
@@ -20,6 +22,7 @@ __all__ = [
     "add_phone",
     "set_email",
     "set_birthday",
+    "set_address",
     "all_contacts",
     "find_contact",
     "birthdays",
@@ -27,5 +30,6 @@ __all__ = [
     "del_phone",
     "del_email",
     "del_birthday",
+    "del_address",
     "del_contact",
 ]
