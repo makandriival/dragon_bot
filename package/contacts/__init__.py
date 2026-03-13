@@ -1,4 +1,35 @@
-from .contacts import Contacts
+from .contacts import (
+    Contacts,
+    add_contact,
+    add_phone,
+    set_email,
+    set_birthday,
+    set_address,
+    all_contacts,
+    find_contact,
+    birthdays,
+    edit_name,
+    del_phone,
+    del_email,
+    del_birthday,
+    del_address,
+    del_contact,
+)
 
-
-__all__ = ["Contacts"]
+__all__ = [
+    "Contacts",
+    "add_contact",
+    "add_phone",
+    "set_email",
+    "set_birthday",
+    "set_address",
+    "all_contacts",
+    "find_contact",
+    "birthdays",
+    "edit_name",
+    "del_phone",
+    "del_email",
+    "del_birthday",
+    "del_address",
+    "del_contact",
+]
