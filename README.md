@@ -102,3 +102,41 @@ The following commands will be available to you:
 
     ```exit```
     ```quit```
+
+## Demo Contacts
+
+The project includes sample contacts that allow you to immediately test the bot's functionality.
+
+The example data is located in:
+
+example/dragon_bot_data/contacts.pkl
+How to use:
+
+Clone the repository:
+
+git clone
+
+Navigate to the project folder
+
+Copy the folder dragon_bot_data from the example directory to your home directory.
+
+You can do it in two ways:
+
+Option 1 — manually
+
+Copy the folder dragon_bot_data from example and paste it into your home directory.
+
+Option 2 — using a command
+
+cp -r example/dragon_bot_data ~/
+
+After copying, the structure in your home folder should look like this:
+
+~/dragon_bot_data/
+└── contacts.pkl
+
+Run the bot:
+
+python main.py
+
+After starting the bot, the sample contacts from contacts.pkl will be loaded automatically, so you can immediately test the contact management commands.
