@@ -128,7 +128,7 @@ Copy the folder dragon_bot_data from example and paste it into your home directo
 
 Option 2 — using a command
 
-cp -r example/dragon_bot_data ~/
+```cp -r example/dragon_bot_data ~/```
 
 After copying, the structure in your home folder should look like this:
 
