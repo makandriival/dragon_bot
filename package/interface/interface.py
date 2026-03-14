@@ -20,7 +20,11 @@ class Interface:
 
     def command_loop(self):
         while True:
-            user_input = input(INPUT_PROMPT)
+            try:
+                user_input = input(INPUT_PROMPT)
+            except KeyboardInterrupt:
+                write_message(EXITING_MESSAGE, INFO)
+                break
             normalized_input = user_input.strip().lower()
             
             if normalized_input in [InterfaceCommands.EXIT.value, InterfaceCommands.QUIT.value]:
@@ -58,6 +62,7 @@ class Interface:
 
     def __print_help(self):
         lines = [
+            "\n"
             f"{Fore.CYAN}{Style.BRIGHT}"
             f"{AVAILABLE_COMMANDS}"
             f"{Style.RESET_ALL}\n"

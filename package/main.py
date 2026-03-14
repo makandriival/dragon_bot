@@ -1,14 +1,8 @@
-from notes import Notes
 from interface import Interface
 from contacts import *
 
 
 def main():
-    # Create an instance of the Notes class
-    notes = Notes()
-
-    # Create an instance of the Contacts class
-    contacts = Contacts()
 
     # Create a dictionary of commands and their corresponding functions
     commands = {
