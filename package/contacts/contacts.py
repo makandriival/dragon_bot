@@ -2,7 +2,7 @@ from collections import UserDict
 from datetime import datetime, timedelta
 from writer import write_message
 from data_source.actions import read_from_file, write_to_file
-from interface.constants import INFO, ERROR
+from interface.constants import INFO
 from bot_exceptions import (
     ContactNotFoundError,
     DuplicateContactError,
@@ -12,6 +12,7 @@ from bot_exceptions import (
 )
 
 DATE_FORMAT = "%d.%m.%Y"
+
 
 # FIELDS
 class Field:
@@ -31,17 +32,22 @@ class Field:
         self._validate(value)
         self._value = value
 
-class Name(Field): pass
+
+class Name(Field):
+    pass
+
 
 class Phone(Field):
     def _validate(self, value):
         if not value.isdigit() or len(value) != 10:
             raise InvalidPhoneNumberError()
 
+
 class Email(Field):
     def _validate(self, value):
         if "@" not in value:
             raise InvalidEmailError()
+
 
 class Birthday(Field):
     def _validate(self, value):
@@ -53,7 +59,10 @@ class Birthday(Field):
     def get_date(self):
         return datetime.strptime(self.value, DATE_FORMAT).date()
 
-class Address(Field): pass
+
+class Address(Field):
+    pass
+
 
 # RECORD
 class Record:
@@ -94,10 +103,12 @@ class Record:
 
     def __str__(self):
         address = self.address.value if self.address else "-"
-        phones = ", ".join(p.value for p in self.phones) if self.phones else "-"
+        phones = ", ".join(p.value for p in self.phones) \
+            if self.phones else "-"
         email = self.email.value if self.email else "-"
         birthday = self.birthday.value if self.birthday else "-"
-        return f"{self.name.value} | address: {address} | phones: {phones} | email: {email} | birthday: {birthday}"
+        return (f"{self.name.value} | address: {address} | phones:"
+                f" {phones} | email: {email} | birthday: {birthday}")
 
     def to_dict(self):
         return {
@@ -120,6 +131,7 @@ class Record:
         if data.get("birthday"):
             record.set_birthday(data["birthday"])
         return record
+
 
 # CONTACTS
 class Contacts(UserDict):
@@ -163,7 +175,8 @@ class Contacts(UserDict):
             birthday = record.birthday.get_date()
             birthday_this_year = birthday.replace(year=today.year)
             if birthday_this_year < today:
-                birthday_this_year = birthday_this_year.replace(year=today.year + 1)
+                birthday_this_year = birthday_this_year.replace(
+                    year=today.year + 1)
 
             if today <= birthday_this_year <= end_date:
                 congrat_day = birthday_this_year
@@ -171,11 +184,15 @@ class Contacts(UserDict):
                     congrat_day += timedelta(days=2)
                 elif congrat_day.weekday() == 6:
                     congrat_day += timedelta(days=1)
-                result.append(f"{record.name.value}: {congrat_day.strftime(DATE_FORMAT)}")
+                result.append(
+                    f"{record.name.value}: {congrat_day.strftime(DATE_FORMAT)}"
+                )
         return result
+
 
 # GLOBAL INSTANCE
 contacts = Contacts()
+
 
 # COMMANDS
 def add_contact(name, phone):
@@ -187,6 +204,7 @@ def add_contact(name, phone):
     contacts.add_record(record)
     write_message("Contact added", INFO)
 
+
 def add_phone(name, phone):
     record = contacts.find(name)
     if not record:
@@ -195,12 +213,14 @@ def add_phone(name, phone):
     contacts.save_data()
     write_message("Phone added", INFO)
 
+
 def del_contact(name):
     record = contacts.find(name)
     if not record:
         raise ContactNotFoundError()
     contacts.delete(name)
     write_message("Contact deleted", INFO)
+
 
 def del_phone(name, phone):
     record = contacts.find(name)
@@ -210,6 +230,7 @@ def del_phone(name, phone):
     contacts.save_data()
     write_message("Phone deleted", INFO)
 
+
 def set_email(name, email):
     record = contacts.find(name)
     if not record:
@@ -217,6 +238,7 @@ def set_email(name, email):
     record.set_email(email)
     contacts.save_data()
     write_message("Email set", INFO)
+
 
 def del_email(name):
     record = contacts.find(name)
@@ -226,6 +248,7 @@ def del_email(name):
     contacts.save_data()
     write_message("Email deleted", INFO)
 
+
 def set_birthday(name, birthday):
     record = contacts.find(name)
     if not record:
@@ -233,6 +256,7 @@ def set_birthday(name, birthday):
     record.set_birthday(birthday)
     contacts.save_data()
     write_message("Birthday set", INFO)
+
 
 def del_birthday(name):
     record = contacts.find(name)
@@ -242,6 +266,7 @@ def del_birthday(name):
     contacts.save_data()
     write_message("Birthday deleted", INFO)
 
+
 def set_address(name, address):
     record = contacts.find(name)
     if not record:
@@ -249,6 +274,7 @@ def set_address(name, address):
     record.set_address(address)
     contacts.save_data()
     write_message("Address set", INFO)
+
 
 def del_address(name):
     record = contacts.find(name)
@@ -258,6 +284,7 @@ def del_address(name):
     contacts.save_data()
     write_message("Address deleted", INFO)
 
+
 def all_contacts():
     if not contacts.data:
         write_message("Address book is empty", INFO)
@@ -265,11 +292,13 @@ def all_contacts():
     for rec in contacts.data.values():
         write_message(rec, INFO)
 
+
 def find_contact(name):
     record = contacts.find(name)
     if not record:
         raise ContactNotFoundError()
     write_message(record, INFO)
+
 
 def birthdays(days):
     result = contacts.upcoming_birthdays(int(days))
@@ -278,6 +307,7 @@ def birthdays(days):
         return
     for line in result:
         write_message(line, INFO)
+
 
 def edit_name(old_name, new_name):
     record = contacts.find(old_name)

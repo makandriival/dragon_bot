@@ -24,7 +24,7 @@ Start using the assistant by simply entering a console command
 ```bash
 dragonbot
 ```
-You will seean an invitation
+You will see a prompt
 ```
 Enter command:
 ```

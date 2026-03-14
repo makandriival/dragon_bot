@@ -1,276 +1,277 @@
-import pickle
-from pathlib import Path
-from ..writer import write_message
+from writer import write_message
+from bot_exceptions import (
+    NotEnoughArgumentsError,
+    NoteNotFoundError,
+    InvalidCommandError,
+)
+from data_source.actions import write_to_file, read_from_file
 
 
 class Notes:
-    """Class for managing notes and note tags."""
+    """Class for managing notes."""
 
     def __init__(self):
-        self.notes = []
-        self.file_path = Path(__file__).resolve().parents[2] / "notes.pkl"
-        self.__load_notes()
+        stored_data = read_from_file("notes")
 
-    # =========================
-    # Public command handlers
-    # =========================
+        if isinstance(stored_data, dict):
+            self.notes = stored_data.get("notes", [])
+            self.next_id = stored_data.get("next_id", 1)
+        else:
+            self.notes = []
+            self.next_id = 1
 
     def add_note(self, *args):
-        """
-        Command format:
-        add_note "note text"
-        """
-        if len(args) != 1:
-            raise ValueError('add_note command requires exactly one argument: "note text".')
+        if len(args) < 1:
+            raise NotEnoughArgumentsError(
+                "add-note command requires note text.")
 
-        note_text = args[0].strip()
+        if len(args) > 1:
+            write_message(
+                "Warning: extra arguments detected."
+                " They were joined into one note text.",
+                "warning",
+            )
+
+        note_text = " ".join(args).strip()
+
         if not note_text:
-            raise ValueError("Note text cannot be empty.")
+            raise InvalidCommandError("Note text cannot be empty.")
 
-        message = self.__add_note(note_text)
-        self.__save_notes()
-        write_message(message, "info")
+        note = self.__add_note(note_text)
+        self.__save()
+
+        print(f"Note added: [{note['id']}] {note['text']}")
 
     def get_notes(self, *args):
-        """
-        Command format:
-        get_notes
-        """
-        if len(args) != 0:
-            raise ValueError("get_notes command does not take arguments.")
+        if len(args) > 0:
+            write_message(
+                "Warning: get-notes does not need arguments."
+                " Extra arguments were ignored.",
+                "warning",
+            )
 
         notes = self.__get_notes()
 
         if not notes:
-            write_message("No notes found.", "info")
+            print("No notes found.")
             return
 
-        for index, note in enumerate(notes, start=1):
-            tags = ", ".join(note["tags"]) if note["tags"] else "no tags"
-            write_message(f'{index}. {note["text"]} | tags: {tags}', "info")
-
-    def edit_note(self, *args):
-        """
-        Command format:
-        edit_note <index> "new note text"
-        """
-        if len(args) != 2:
-            raise ValueError('edit_note command requires exactly two arguments: <index> "new note text".')
-
-        index = self.__parse_index(args[0])
-        new_text = args[1].strip()
-
-        if not new_text:
-            raise ValueError("New note text cannot be empty.")
-
-        message = self.__edit_note(index, new_text)
-        self.__save_notes()
-        write_message(message, "info")
+        for note in notes:
+            self.__print_note(note)
 
     def delete_note(self, *args):
-        """
-        Command format:
-        delete_note <index>
-        """
-        if len(args) != 1:
-            raise ValueError("delete_note command requires exactly one argument: <index>.")
+        if len(args) < 1:
+            raise NotEnoughArgumentsError(
+                "delete-note command requires note id.")
 
-        index = self.__parse_index(args[0])
+        if len(args) > 1:
+            write_message(
+                "Warning: extra arguments detected."
+                " Only the first argument was used as note id.",
+                "warning",
+            )
 
-        message = self.__delete_note(index)
-        self.__save_notes()
-        write_message(message, "info")
+        note_id = self.__parse_note_id(args[0])
+        deleted_note = self.__delete_note(note_id)
+
+        if deleted_note is None:
+            raise NoteNotFoundError(f"Note with id {note_id} not found.")
+
+        self.__save()
+        print(f"Note deleted: [{deleted_note['id']}] {deleted_note['text']}")
 
     def search_notes(self, *args):
-        """
-        Command format:
-        search_notes "keyword"
-        """
-        if len(args) != 1:
-            raise ValueError('search_notes command requires exactly one argument: "keyword".')
+        if len(args) < 1:
+            raise NotEnoughArgumentsError(
+                "search-notes command requires a keyword.")
 
-        keyword = args[0].strip()
+        if len(args) > 1:
+            write_message(
+                "Warning: extra arguments detected."
+                " They were joined into one search query.",
+                "warning",
+            )
+
+        keyword = " ".join(args).strip()
+
         if not keyword:
-            raise ValueError("Search keyword cannot be empty.")
+            raise InvalidCommandError("Search keyword cannot be empty.")
 
-        results = self.__search_notes(keyword)
+        found_notes = self.__search_notes(keyword)
 
-        if not results:
-            write_message("No matching notes found.", "info")
+        if not found_notes:
+            print("No matching notes found.")
             return
 
-        for index, note in results:
-            tags = ", ".join(note["tags"]) if note["tags"] else "no tags"
-            write_message(f'{index + 1}. {note["text"]} | tags: {tags}', "info")
+        for note in found_notes:
+            self.__print_note(note)
 
     def add_tag(self, *args):
-        """
-        Command format:
-        add_tag <index> "tag"
-        """
-        if len(args) != 2:
-            raise ValueError('add_tag command requires exactly two arguments: <index> "tag".')
+        if len(args) < 2:
+            raise NotEnoughArgumentsError(
+                "add-tag command requires note id and at least one tag."
+            )
 
-        index = self.__parse_index(args[0])
+        note_id = self.__parse_note_id(args[0])
+        tags = [tag.strip().lower() for tag in args[1:] if tag.strip()]
+
+        if not tags:
+            raise InvalidCommandError("At least one valid tag is required.")
+
+        note = self.__add_tag(note_id, tags)
+
+        if note is None:
+            raise NoteNotFoundError(f"Note with id {note_id} not found.")
+
+        self.__save()
+        print(f"Tags added to note [{note_id}].")
+        self.__print_note(note)
+
+    def remove_tag(self, *args):
+        if len(args) < 2:
+            raise NotEnoughArgumentsError(
+                "remove-tag command requires note id and tag."
+            )
+
+        if len(args) > 2:
+            write_message(
+                "Warning: extra arguments detected."
+                " Only the first tag was used.",
+                "warning",
+            )
+
+        note_id = self.__parse_note_id(args[0])
         tag = args[1].strip().lower()
 
         if not tag:
-            raise ValueError("Tag cannot be empty.")
+            raise InvalidCommandError("Tag cannot be empty.")
 
-        message = self.__add_tag(index, tag)
-        self.__save_notes()
-        write_message(message, "info")
+        result = self.__remove_tag(note_id, tag)
+
+        if result is None:
+            raise NoteNotFoundError(f"Note with id {note_id} not found.")
+
+        self.__save()
+        print(f"Tag '{tag}' removed from note [{note_id}].")
+        self.__print_note(result)
 
     def search_by_tag(self, *args):
-        """
-        Command format:
-        search_by_tag "tag"
-        """
-        if len(args) != 1:
-            raise ValueError('search_by_tag command requires exactly one argument: "tag".')
+        if len(args) < 1:
+            raise NotEnoughArgumentsError(
+                "search-by-tag command requires at least one tag.")
 
-        tag = args[0].strip().lower()
-        if not tag:
-            raise ValueError("Tag cannot be empty.")
+        tags = [tag.strip().lower() for tag in args if tag.strip()]
 
-        results = self.__search_by_tag(tag)
+        if not tags:
+            raise InvalidCommandError("At least one valid tag is required.")
 
-        if not results:
-            write_message("No notes found for this tag.", "info")
+        found_notes = self.__search_by_tags(tags)
+
+        if not found_notes:
+            print("No notes found for given tag(s).")
             return
 
-        for index, note in results:
-            tags = ", ".join(note["tags"]) if note["tags"] else "no tags"
-            write_message(f'{index + 1}. {note["text"]} | tags: {tags}', "info")
+        for note in found_notes:
+            self.__print_note(note)
 
-    def sort_by_tags(self, *args):
-        """
-        Command format:
-        sort_by_tags
-        """
-        if len(args) != 0:
-            raise ValueError("sort_by_tags command does not take arguments.")
+    def sort_notes_by_tags(self, *args):
+        if len(args) > 0:
+            write_message(
+                "Warning: sort-notes-by-tags does not need arguments."
+                " Extra arguments were ignored.",
+                "warning",
+            )
 
-        sorted_notes = self.__sort_by_tags()
+        notes = self.__sort_notes_by_tags()
 
-        if not sorted_notes:
-            write_message("No notes found.", "info")
+        if not notes:
+            print("No notes found.")
             return
 
-        for index, note in enumerate(sorted_notes, start=1):
-            tags = ", ".join(note["tags"]) if note["tags"] else "no tags"
-            write_message(f'{index}. {note["text"]} | tags: {tags}', "info")
+        for note in notes:
+            self.__print_note(note)
 
-    # =========================
-    # Private helpers
-    # =========================
+    def __save(self):
+        write_to_file(
+            {
+                "notes": self.notes,
+                "next_id": self.next_id,
+            },
+            "notes",
+        )
 
-    def __add_note(self, note_text: str) -> str:
-        self.notes.append({"text": note_text, "tags": []})
-        return "Note added."
+    def __parse_note_id(self, raw_id):
+        try:
+            return int(raw_id)
+        except (TypeError, ValueError):
+            raise InvalidCommandError("Note id must be an integer.")
 
-    def __get_notes(self) -> list:
+    def __add_note(self, text: str):
+        note = {
+            "id": self.next_id,
+            "text": text,
+            "tags": [],
+        }
+        self.notes.append(note)
+        self.next_id += 1
+        return note
+
+    def __get_notes(self):
         return self.notes
 
-    def __delete_note(self, index: int) -> str:
-        note = self.notes.pop(index)
-        return f'Note deleted: "{note["text"]}"'
+    def __delete_note(self, note_id: int):
+        for index, note in enumerate(self.notes):
+            if note["id"] == note_id:
+                return self.notes.pop(index)
+        return None
 
-    def __edit_note(self, index: int, new_text: str) -> str:
-        old_text = self.notes[index]["text"]
-        self.notes[index]["text"] = new_text
-        return f'Note updated: "{old_text}" -> "{new_text}"'
-
-    def __search_notes(self, keyword: str) -> list:
+    def __search_notes(self, keyword: str):
         keyword = keyword.lower()
         return [
-            (index, note)
-            for index, note in enumerate(self.notes)
+            note for note in self.notes
             if keyword in note["text"].lower()
         ]
 
-    def __add_tag(self, index: int, tag: str) -> str:
-        if tag in self.notes[index]["tags"]:
-            raise ValueError("This tag already exists for the selected note.")
+    def __add_tag(self, note_id: int, tags: list[str]):
+        note = self.__find_note_by_id(note_id)
+        if note is None:
+            return None
 
-        self.notes[index]["tags"].append(tag)
-        self.notes[index]["tags"].sort()
-        return f'Tag "{tag}" added to note.'
+        for tag in tags:
+            if tag not in note["tags"]:
+                note["tags"].append(tag)
 
-    def __search_by_tag(self, tag: str) -> list:
+        note["tags"].sort()
+        return note
+
+    def __remove_tag(self, note_id: int, tag: str):
+        note = self.__find_note_by_id(note_id)
+        if note is None:
+            return None
+
+        if tag in note["tags"]:
+            note["tags"].remove(tag)
+
+        return note
+
+    def __search_by_tags(self, tags: list[str]):
         return [
-            (index, note)
-            for index, note in enumerate(self.notes)
-            if tag in note["tags"]
+            note for note in self.notes
+            if all(tag in note["tags"] for tag in tags)
         ]
 
-    def __sort_by_tags(self) -> list:
+    def __sort_notes_by_tags(self):
         return sorted(
             self.notes,
-            key=lambda note: (note["tags"], note["text"].lower())
+            key=lambda note: (", ".join(note["tags"]), note["id"])
         )
 
-    def __parse_index(self, raw_index) -> int:
-        try:
-            index = int(raw_index)
-        except (TypeError, ValueError):
-            raise ValueError("Index must be a positive integer.")
+    def __find_note_by_id(self, note_id: int):
+        for note in self.notes:
+            if note["id"] == note_id:
+                return note
+        return None
 
-        if index < 1:
-            raise ValueError("Index must be greater than 0.")
-
-        real_index = index - 1
-
-        if real_index >= len(self.notes):
-            raise ValueError("Note with this index does not exist.")
-
-        return real_index
-
-    def __save_notes(self):
-        with open(self.file_path, "wb") as file:
-            pickle.dump(self.notes, file)
-
-    def __load_notes(self):
-        if not self.file_path.exists():
-            self.notes = []
-            return
-
-        try:
-            with open(self.file_path, "rb") as file:
-                loaded_notes = pickle.load(file)
-
-            self.notes = self.__normalize_loaded_notes(loaded_notes)
-        except (pickle.PickleError, EOFError, FileNotFoundError):
-            self.notes = []
-
-    def __normalize_loaded_notes(self, loaded_notes):
-        """
-        Supports both:
-        - new format: [{"text": "...", "tags": [...]}]
-        - old format: ["note 1", "note 2"]
-        """
-        normalized = []
-
-        if not isinstance(loaded_notes, list):
-            return normalized
-
-        for item in loaded_notes:
-            if isinstance(item, str):
-                normalized.append({"text": item, "tags": []})
-            elif isinstance(item, dict):
-                text = str(item.get("text", "")).strip()
-                tags = item.get("tags", [])
-
-                if not text:
-                    continue
-
-                if not isinstance(tags, list):
-                    tags = []
-
-                clean_tags = sorted(
-                    {str(tag).strip().lower() for tag in tags if str(tag).strip()}
-                )
-
-                normalized.append({"text": text, "tags": clean_tags})
-
-        return normalized
+    def __print_note(self, note: dict):
+        tags = ", ".join(note["tags"]) if note["tags"] else "no tags"
+        print(f"[{note['id']}] {note['text']} | tags: {tags}")
