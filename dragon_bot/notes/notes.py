@@ -1,10 +1,10 @@
-from writer import write_message
-from bot_exceptions import (
+from dragon_bot.writer import write_message
+from dragon_bot.bot_exceptions import (
     NotEnoughArgumentsError,
     NoteNotFoundError,
     InvalidCommandError,
 )
-from data_source.actions import write_to_file, read_from_file
+from dragon_bot.data_source.actions import write_to_file, read_from_file
 
 
 class Notes:

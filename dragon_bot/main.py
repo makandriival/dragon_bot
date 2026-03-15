@@ -1,10 +1,18 @@
-from interface import Interface
-from contacts import (
+import os
+import sys
+
+
+if __package__ in (None, ""):
+    # Support running this file directly: `python dragon_bot/main.py`.
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
+from dragon_bot.interface import Interface
+from dragon_bot.contacts import (
     add_contact, add_phone, set_address, set_email, set_birthday,
     all_contacts, find_contact, birthdays, edit_name, del_phone,
     del_email, del_birthday, del_contact, del_address,
 )
-from notes import Notes
+from dragon_bot.notes import Notes
 
 
 def main():

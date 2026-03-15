@@ -6,3 +6,7 @@ pullrequests-list.txt
 
 # Ignore the __pycache__ directory where Python stores compiled bytecode
 __pycache__/
+
+# Ignore the distribution directory where built packages are stored
+dist/
+*.egg-info/

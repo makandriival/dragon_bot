@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dragon_bot"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
   { name="first team" },
 ]
@@ -18,3 +18,6 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://github.com/makandriival/dragon_bot"
+
+[project.scripts]
+dragon-bot = "dragon_bot.main:main"

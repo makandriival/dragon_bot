@@ -1,9 +1,9 @@
 from collections import UserDict
 from datetime import datetime, timedelta
-from writer import write_message
-from data_source.actions import read_from_file, write_to_file
-from interface.constants import INFO
-from bot_exceptions import (
+from dragon_bot.writer import write_message
+from dragon_bot.data_source.actions import read_from_file, write_to_file
+from dragon_bot.interface.constants import INFO
+from dragon_bot.bot_exceptions import (
     ContactNotFoundError,
     DuplicateContactError,
     InvalidPhoneNumberError,

@@ -1,6 +1,6 @@
 import shlex
 import inspect
-from writer import write_message
+from dragon_bot.writer import write_message
 from colorama import Fore, Style
 from .constants import (
     AVAILABLE_COMMANDS,
@@ -14,6 +14,7 @@ from .constants import (
     InterfaceCommands,
 )
 
+
 class Interface:
     def __init__(self, commands: dict[str, callable]):
         self.__commands = commands
@@ -26,8 +27,10 @@ class Interface:
                 write_message(EXITING_MESSAGE, INFO)
                 break
             normalized_input = user_input.strip().lower()
-            
-            if normalized_input in [InterfaceCommands.EXIT.value, InterfaceCommands.QUIT.value]:
+
+            if normalized_input in [
+                    InterfaceCommands.EXIT.value,
+                    InterfaceCommands.QUIT.value]:
                 write_message(EXITING_MESSAGE, INFO)
                 break
             if normalized_input == InterfaceCommands.HELP.value:
@@ -75,9 +78,13 @@ class Interface:
             ]
             command_line = f"{Fore.YELLOW}{name}{Fore.RESET}"
             if params:
-                command_line += f" {Fore.MAGENTA}{' '.join(params)}{Fore.RESET}"
+                command_line += (
+                    f" {Fore.MAGENTA}{' '.join(params)}"
+                    f"{Fore.RESET}"
+                )
             lines.append(command_line)
-        lines.append(f"{Fore.YELLOW}{InterfaceCommands.HELP.value}{Fore.RESET}")
+        lines.append(f"{Fore.YELLOW}{InterfaceCommands.HELP.value}"
+                     f"{Fore.RESET}")
         lines.append(
             f"{Fore.YELLOW}{InterfaceCommands.EXIT.value}{Fore.RESET}"
             f" | {Fore.YELLOW}{InterfaceCommands.QUIT.value}{Fore.RESET}"

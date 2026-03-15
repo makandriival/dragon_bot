@@ -109,7 +109,7 @@ The project includes sample contacts that allow you to immediately test the bot'
 
 The example data is located in:
 
-```example/dragon_bot_data/contacts.pkl```
+```example/dragon_bot_data/*.pkl```
 
 How to use:
 
@@ -133,10 +133,10 @@ Option 2 — using a command
 
 After copying, the structure in your home folder should look like this:
 
-~/dragon_bot_data/contacts.pkl
+~/dragon_bot_data/*.pkl
 
 Run the bot:
 
 ```python main.py```
 
-After starting the bot, the sample contacts from contacts.pkl will be loaded automatically, so you can immediately test the contact management commands.
+After starting the bot, the sample contacts from contacts.pkl and notes from notes.pkl will be loaded automatically, so you can immediately test contact and note management commands.
