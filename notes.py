@@ -1,10 +1,10 @@
-from ..writer import write_message
-from ..bot_exceptions.bot_exceptions import (
+from dragon_bot.writer import write_message
+from dragon_bot.bot_exceptions import (
     NotEnoughArgumentsError,
     NoteNotFoundError,
     InvalidCommandError,
 )
-from ..data_source.actions import write_to_file, read_from_file
+from dragon_bot.data_source.actions import write_to_file, read_from_file
 
 
 class Notes:
@@ -22,35 +22,36 @@ class Notes:
 
     def add_note(self, *args):
         if len(args) < 1:
-            raise NotEnoughArgumentsError("add-note command requires note text.")
+            raise NotEnoughArgumentsError(
+                "add-note command requires note text."
+            )
 
         if len(args) > 1:
             write_message(
-                "Warning: extra arguments detected. They were joined into one note text.",
+                "Warning: extra arguments detected."
+                " They were joined into one note text.",
                 "warning",
             )
 
         note_text = " ".join(args).strip()
-
         if not note_text:
             raise InvalidCommandError("Note text cannot be empty.")
 
         note = self.__add_note(note_text)
         self.__save()
-
-        print(f"Note added: [{note['id']}] {note['text']}")
+        write_message(f"Note added: [{note['id']}] {note['text']}", "info")
 
     def get_notes(self, *args):
         if len(args) > 0:
             write_message(
-                "Warning: get-notes does not need arguments. Extra arguments were ignored.",
+                "Warning: get-notes does not need arguments."
+                " Extra arguments were ignored.",
                 "warning",
             )
 
         notes = self.__get_notes()
-
         if not notes:
-            print("No notes found.")
+            write_message("No notes found.", "info")
             return
 
         for note in notes:
@@ -58,11 +59,14 @@ class Notes:
 
     def delete_note(self, *args):
         if len(args) < 1:
-            raise NotEnoughArgumentsError("delete-note command requires note id.")
+            raise NotEnoughArgumentsError(
+                "delete-note command requires note id."
+            )
 
         if len(args) > 1:
             write_message(
-                "Warning: extra arguments detected. Only the first argument was used as note id.",
+                "Warning: extra arguments detected."
+                " Only the first argument was used as note id.",
                 "warning",
             )
 
@@ -73,27 +77,31 @@ class Notes:
             raise NoteNotFoundError(f"Note with id {note_id} not found.")
 
         self.__save()
-        print(f"Note deleted: [{deleted_note['id']}] {deleted_note['text']}")
+        write_message(
+            f"Note deleted: [{deleted_note['id']}] {deleted_note['text']}",
+            "info",
+        )
 
     def search_notes(self, *args):
         if len(args) < 1:
-            raise NotEnoughArgumentsError("search-notes command requires a keyword.")
+            raise NotEnoughArgumentsError(
+                "search-notes command requires a keyword."
+            )
 
         if len(args) > 1:
             write_message(
-                "Warning: extra arguments detected. They were joined into one search query.",
+                "Warning: extra arguments detected."
+                " They were joined into one search query.",
                 "warning",
             )
 
         keyword = " ".join(args).strip()
-
         if not keyword:
             raise InvalidCommandError("Search keyword cannot be empty.")
 
         found_notes = self.__search_notes(keyword)
-
         if not found_notes:
-            print("No matching notes found.")
+            write_message("No matching notes found.", "info")
             return
 
         for note in found_notes:
@@ -112,12 +120,11 @@ class Notes:
             raise InvalidCommandError("At least one valid tag is required.")
 
         note = self.__add_tag(note_id, tags)
-
         if note is None:
             raise NoteNotFoundError(f"Note with id {note_id} not found.")
 
         self.__save()
-        print(f"Tags added to note [{note_id}].")
+        write_message(f"Tags added to note [{note_id}].", "info")
         self.__print_note(note)
 
     def remove_tag(self, *args):
@@ -128,7 +135,8 @@ class Notes:
 
         if len(args) > 2:
             write_message(
-                "Warning: extra arguments detected. Only the first tag was used.",
+                "Warning: extra arguments detected."
+                " Only the first tag was used.",
                 "warning",
             )
 
@@ -139,27 +147,26 @@ class Notes:
             raise InvalidCommandError("Tag cannot be empty.")
 
         result = self.__remove_tag(note_id, tag)
-
         if result is None:
             raise NoteNotFoundError(f"Note with id {note_id} not found.")
 
         self.__save()
-        print(f"Tag '{tag}' removed from note [{note_id}].")
+        write_message(f"Tag '{tag}' removed from note [{note_id}].", "info")
         self.__print_note(result)
 
     def search_by_tag(self, *args):
         if len(args) < 1:
-            raise NotEnoughArgumentsError("search-by-tag command requires at least one tag.")
+            raise NotEnoughArgumentsError(
+                "search-by-tag command requires at least one tag."
+            )
 
         tags = [tag.strip().lower() for tag in args if tag.strip()]
-
         if not tags:
             raise InvalidCommandError("At least one valid tag is required.")
 
         found_notes = self.__search_by_tags(tags)
-
         if not found_notes:
-            print("No notes found for given tag(s).")
+            write_message("No notes found for given tag(s).", "info")
             return
 
         for note in found_notes:
@@ -168,18 +175,46 @@ class Notes:
     def sort_notes_by_tags(self, *args):
         if len(args) > 0:
             write_message(
-                "Warning: sort-notes-by-tags does not need arguments. Extra arguments were ignored.",
+                "Warning: sort-notes-by-tags does not need arguments."
+                " Extra arguments were ignored.",
                 "warning",
             )
 
         notes = self.__sort_notes_by_tags()
-
         if not notes:
-            print("No notes found.")
+            write_message("No notes found.", "info")
             return
 
         for note in notes:
             self.__print_note(note)
+
+    def edit_note(self, *args):
+        if len(args) < 2:
+            raise NotEnoughArgumentsError(
+                "edit-note command requires note id and new text."
+            )
+
+        if len(args) > 2:
+            write_message(
+                "Warning: extra arguments detected."
+                " They were joined into one new note text.",
+                "warning",
+            )
+
+        note_id = self.__parse_note_id(args[0])
+
+        new_text = " ".join(args[1:]).strip()
+        if not new_text:
+            raise InvalidCommandError("New note text cannot be empty.")
+
+        note = self.__find_note_by_id(note_id)
+        if note is None:
+            raise NoteNotFoundError(f"Note with id {note_id} not found.")
+
+        note["text"] = new_text
+        self.__save()
+        write_message(f"Note with id {note_id} updated.", "info")
+        self.__print_note(note)
 
     def __save(self):
         write_to_file(
@@ -264,4 +299,7 @@ class Notes:
 
     def __print_note(self, note: dict):
         tags = ", ".join(note["tags"]) if note["tags"] else "no tags"
-        print(f"[{note['id']}] {note['text']} | tags: {tags}")
+        write_message(
+            f"[{note['id']}] {note['text']} | tags: {tags}",
+            "info",
+        )
