@@ -2,6 +2,7 @@ import shlex
 import inspect
 from dragon_bot.writer import write_message
 from colorama import Fore, Style
+from difflib import get_close_matches
 from .constants import (
     AVAILABLE_COMMANDS,
     ERROR,
@@ -58,10 +59,19 @@ class Interface:
                 except Exception as e:
                     write_message(e, ERROR)
             else:
-                write_message(
-                    UNKNOWN_COMMAND.format(command=command_name),
-                    ERROR,
-                )
+                close_matches = get_close_matches(command_name,
+                                                  self.command_names)
+                if close_matches:
+                    write_message(
+                        f"Unknown command '{command_name}'."
+                        f" Did you mean '{close_matches[0]}'?",
+                        ERROR,
+                    )
+                else:
+                    write_message(
+                        UNKNOWN_COMMAND.format(command=command_name),
+                        ERROR,
+                    )
 
     def __print_help(self):
         lines = [
@@ -90,3 +100,8 @@ class Interface:
             f" | {Fore.YELLOW}{InterfaceCommands.QUIT.value}{Fore.RESET}"
         )
         print("\n".join(lines) + "\n")
+
+    @property
+    def command_names(self):
+        internal_command_names = [cmd.value for cmd in InterfaceCommands]
+        return list(self.__commands.keys()) + internal_command_names

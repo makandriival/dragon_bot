@@ -40,7 +40,7 @@ class Notes:
         note = self.__add_note(note_text)
         self.__save()
 
-        print(f"Note added: [{note['id']}] {note['text']}")
+        write_message(f"Note added: [{note['id']}] {note['text']}", "info")
 
     def get_notes(self, *args):
         if len(args) > 0:
@@ -53,7 +53,7 @@ class Notes:
         notes = self.__get_notes()
 
         if not notes:
-            print("No notes found.")
+            write_message("No notes found.", "info")
             return
 
         for note in notes:
@@ -78,7 +78,8 @@ class Notes:
             raise NoteNotFoundError(f"Note with id {note_id} not found.")
 
         self.__save()
-        print(f"Note deleted: [{deleted_note['id']}] {deleted_note['text']}")
+        write_message(f"Note deleted: [{deleted_note['id']}]"
+                      f" {deleted_note['text']}", "info")
 
     def search_notes(self, *args):
         if len(args) < 1:
@@ -100,7 +101,7 @@ class Notes:
         found_notes = self.__search_notes(keyword)
 
         if not found_notes:
-            print("No matching notes found.")
+            write_message("No matching notes found.", "info")
             return
 
         for note in found_notes:
@@ -124,7 +125,7 @@ class Notes:
             raise NoteNotFoundError(f"Note with id {note_id} not found.")
 
         self.__save()
-        print(f"Tags added to note [{note_id}].")
+        write_message(f"Tags added to note [{note_id}].", "info")
         self.__print_note(note)
 
     def remove_tag(self, *args):
@@ -152,7 +153,7 @@ class Notes:
             raise NoteNotFoundError(f"Note with id {note_id} not found.")
 
         self.__save()
-        print(f"Tag '{tag}' removed from note [{note_id}].")
+        write_message(f"Tag '{tag}' removed from note [{note_id}].", "info")
         self.__print_note(result)
 
     def search_by_tag(self, *args):
@@ -168,7 +169,7 @@ class Notes:
         found_notes = self.__search_by_tags(tags)
 
         if not found_notes:
-            print("No notes found for given tag(s).")
+            write_message("No notes found for given tag(s).", "info")
             return
 
         for note in found_notes:
@@ -185,11 +186,37 @@ class Notes:
         notes = self.__sort_notes_by_tags()
 
         if not notes:
-            print("No notes found.")
+            write_message("No notes found.", "info")
             return
 
         for note in notes:
             self.__print_note(note)
+
+    def edit_note(self, *args):
+        if len(args) < 2:
+            raise NotEnoughArgumentsError
+        if len(args) > 2:
+            write_message(
+                "Warning: extra arguments detected."
+                " They were joined into one new note text.",
+                "warning",
+            )
+
+        note_id = self.__parse_note_id(args[0])
+        new_text = " ".join(args[1:]).strip()
+
+        if not new_text:
+            raise ValueError("New note text cannot be empty.")
+
+        note = self.__find_note_by_id(note_id)
+
+        if note is None:
+            raise NoteNotFoundError
+
+        note["text"] = new_text
+        self.__save()
+        write_message(f"Note with id {note_id} updated.", "info")
+        self.__print_note(note)
 
     def __save(self):
         write_to_file(
@@ -274,4 +301,4 @@ class Notes:
 
     def __print_note(self, note: dict):
         tags = ", ".join(note["tags"]) if note["tags"] else "no tags"
-        print(f"[{note['id']}] {note['text']} | tags: {tags}")
+        write_message(f"[{note['id']}] {note['text']} | tags: {tags}", "info")

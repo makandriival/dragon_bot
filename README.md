@@ -34,27 +34,31 @@ The following commands will be available to you:
 
     ```add-contact <name> <phone>```
 
-2. Add another phone number to the contact
+1. Edit the name in the contact    
+
+    ```edit-name <old_name> <new_name>```
+
+3. Add another phone number to the contact
 
     ```add-phone <name> <phone>```
 
-3. Add or change email to the contact
+4. Add or change email to the contact
 
     ```set-email <name> <email>```
 
-4. Add or change birthday to the contact
+5. Add or change birthday to the contact
 
     ```set-birthday <name> <DD.MM.YYYY>```
 
-5. Display the contact list on the screen
+6. Display the contact list on the screen
 
     ```all-contacts```
 
-6. Find a contact by name
+7. Find a contact by name
 
     ```find-contact <name>```
 
-7. Display a list of contacts whose birthday is a specified number of days away from the current date
+8. Display a list of contacts whose birthday is a specified number of days away from the current date
 
     ```birthdays <number_of_days>```
 
@@ -74,31 +78,55 @@ The following commands will be available to you:
 
     ```del-contact <name>```
 
-13. Add a note
+13. Add or change address to the contact
+
+    ```set-address <name> <address```
+
+14. Delete an address from the contact
+
+    ```del-address <name>```
+
+15. Add a note
 
     ```add-note <Any_note_in_quotation_marks>```
 
-14. Display the note list on the screen
+16. Edit a note
+
+    ```edit-note <note_id> <Any_note_in_quotation_marks>```
+
+17. Display the note list on the screen
 
     ```all-notes```
 
-15. Add another a tag to the note 
+18. Add another a tag to the note 
 
     ```add-tag <note_id> <tag>```
 
-16. Delete a note
+19. Delete a tag from the note
+
+    ```del_tag <note_id> <tag>```
+
+20. Display the sorted note list by tags
+
+    ```sort-notes```
+
+21. Delete a note
 
     ```del-note <note_id>```
 
-17. Display the note list on the screen by a tag
+22. Display the note list on the screen by a tag
 
-    ```find-notes <tag>```
+    ```find-notes-by-tag <tag>```
 
-18. Get help about the bot commands
+23. Display the note list on the screen by a keyword
+
+    ```find-notes-by-keyword <keyword>```
+
+24. Get help about the bot commands
 
     ```help```
 
-19. Exit from program
+25. Exit from program
 
     ```exit```
     ```quit```
