@@ -3,7 +3,7 @@
 ## Installation
 The dragonbot can be installed using pip.
 ```bash
-pip install dragonbot
+pip install dragon-bot
 ```
 
 ## Description
@@ -22,7 +22,7 @@ The Personal Assistant Bot can:
 ## Usage
 Start using the assistant by simply entering a console command
 ```bash
-dragonbot
+dragon-bot
 ```
 You will see a prompt
 ```
