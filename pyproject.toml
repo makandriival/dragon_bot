@@ -4,7 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dragon_bot"
-version = "0.1.1"
+version = "0.1.2"
+dependencies = [
+    "colorama",
+]
 authors = [
   { name="first team" },
 ]

@@ -10,3 +10,6 @@ __pycache__/
 # Ignore the distribution directory where built packages are stored
 dist/
 *.egg-info/
+
+# Ignore the .DS_Store file created by macOS in directories
+.DS_Store
